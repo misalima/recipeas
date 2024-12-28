@@ -1,11 +1,10 @@
-package com.misaellima.recipeas
+package com.misaellima.recipeas.repository
 
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.misaellima.recipeas.database.RecipeasDatabase
 import com.misaellima.recipeas.database.dao.UserDao
 import com.misaellima.recipeas.database.models.User
-import com.misaellima.recipeas.repository.UserRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
