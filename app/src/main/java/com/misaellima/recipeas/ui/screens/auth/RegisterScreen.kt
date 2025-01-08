@@ -18,8 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,13 +29,22 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import kotlin.math.round
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.misaellima.recipeas.repository.UserRepository
+import com.misaellima.recipeas.viewmodels.RegisterViewModel
+import com.misaellima.recipeas.viewmodels.RegisterViewModelFactory
+
 
 @Composable
 fun RegisterScreen(
     modifier: Modifier = Modifier,
-    onRegisterClick: () -> Unit
+    userRepository: UserRepository,
+    onRegisterSuccess: () -> Unit
 ) {
+    val viewModel: RegisterViewModel = viewModel(
+        factory = RegisterViewModelFactory(userRepository)
+    )
+
     Column (
         modifier = modifier
             .fillMaxSize()
@@ -47,7 +58,14 @@ fun RegisterScreen(
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(0.dp, 0.dp, 0.dp, 20.dp)
         )
-        RegisterForm() {  }
+        RegisterForm(
+            viewModel = viewModel,
+            onRegisterClick = {
+                if (viewModel.registerUser()) {
+                    onRegisterSuccess()
+                }
+            }
+        )
 
         Row (
             modifier = Modifier.padding(0.dp, 20.dp, 0.dp, 0.dp),
@@ -71,28 +89,19 @@ fun RegisterScreen(
 
 @Composable
 fun RegisterForm(
+    viewModel: RegisterViewModel,
     onRegisterClick: () -> Unit
 ) {
-
-    val name = remember {
-        mutableStateOf("")
-    }
-    val email = remember {
-        mutableStateOf("")
-    }
-    val userPassword = remember {
-        mutableStateOf("")
-    }
-    val confirmPassword = remember {
-        mutableStateOf("")
-    }
 
     Column {
 
         //Name field
-        OutlinedTextField(value = name.value, onValueChange = {
-            name.value = it
+        OutlinedTextField(
+            value = viewModel.name.value,
+            onValueChange = {
+            viewModel.onUsernameChanged(it)
         },
+            isError = viewModel.usernameError.value != null,
             leadingIcon = {
                 Icon(Icons.Default.Person, contentDescription = "name")
             },
@@ -100,14 +109,26 @@ fun RegisterForm(
             label = {
                 Text(text = "your name")
             },
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp, 0.dp, 0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 10.dp, 0.dp, 0.dp),
             shape = RoundedCornerShape(32.dp)
         )
+        if (viewModel.usernameError.value != null) {
+            Text(
+                text = viewModel.usernameError.value!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
 
         // Email field
-        OutlinedTextField(value = email.value, onValueChange = {
-            email.value = it
+        OutlinedTextField(
+            value = viewModel.email.value,
+            onValueChange = {
+            viewModel.onEmailChanged(it)
         },
+            isError = viewModel.emailError.value != null,
             leadingIcon = {
                 Icon(Icons.Default.Email, contentDescription = "email")
             },
@@ -115,43 +136,77 @@ fun RegisterForm(
             label = {
                 Text(text = "email")
             },
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp, 0.dp, 0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 10.dp, 0.dp, 0.dp),
             shape = RoundedCornerShape(32.dp)
         )
 
+        if (viewModel.emailError.value != null) {
+            Text(
+                text = viewModel.emailError.value!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+
         // Password input field
-        OutlinedTextField(value = userPassword.value, onValueChange = {
-            userPassword.value = it
-        },
+        OutlinedTextField(
+            value = viewModel.password.value,
+            onValueChange = { viewModel.onPasswordChanged(it) },
+            isError = viewModel.passwordError.value != null,
             leadingIcon = {
                 Icon(Icons.Default.Lock, contentDescription = "password")
             },
             label = {
                 Text(text = "password")
             },
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp, 0.dp, 0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 10.dp, 0.dp, 0.dp),
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(32.dp)
         )
+
+        if (viewModel.passwordError.value != null) {
+            Text(
+                text = viewModel.passwordError.value!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
         //Confirm password input field
-        OutlinedTextField(value = confirmPassword.value, onValueChange = {
-            confirmPassword.value = it
-        },
+        OutlinedTextField(
+            value = viewModel.confirmPassword.value,
+            onValueChange = { viewModel.onConfirmPasswordChanged(it) },
+            isError = viewModel.confirmPasswordError.value != null,
             leadingIcon = {
                 Icon(Icons.Default.Lock, contentDescription = "confirm password")
             },
             label = {
                 Text(text = "confirm password")
             },
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 10.dp, 0.dp, 0.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 10.dp, 0.dp, 0.dp),
             visualTransformation = PasswordVisualTransformation(),
             shape = RoundedCornerShape(32.dp)
         )
+        if (viewModel.confirmPasswordError.value != null) {
+            Text(
+                text = viewModel.confirmPasswordError.value!!,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
 
         //Register button
         Button(
-            onClick = onRegisterClick,
-            modifier = Modifier.fillMaxWidth().padding(0.dp, 20.dp, 0.dp, 0.dp).height(50.dp)
+            onClick = { onRegisterClick() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 20.dp, 0.dp, 0.dp)
+                .height(50.dp)
         ) {
             Text(
                 text = "Register",
@@ -159,7 +214,9 @@ fun RegisterForm(
             )
         }
         Row (
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 18.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
@@ -174,8 +231,3 @@ fun RegisterForm(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewRegisterScreen() {
-    RegisterScreen(onRegisterClick = {})
-}

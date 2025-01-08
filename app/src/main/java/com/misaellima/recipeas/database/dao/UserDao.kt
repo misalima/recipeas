@@ -21,10 +21,10 @@ interface UserDao {
     fun getAllUsers(): Flow<List<User>>
 
     @Query("SELECT * FROM user WHERE id = :id")
-    fun getUserById(id: Int): User
+    suspend fun getUserById(id: Int): User
 
     @Query("SELECT * FROM user WHERE email = :email")
-    fun getUserByEmail(email: String): User
+    suspend fun getUserByEmail(email: String): User
 
     @Query("SELECT favoriteRecipes FROM User WHERE id = :id")
     fun getFavoriteRecipesRaw(id: Int): Flow<String>

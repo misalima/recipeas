@@ -9,6 +9,6 @@ data class User (
     val name: String,
     val email: String,
     val password: String,
-    val profilePicture: String,
-    val favoriteRecipes: List<Int>
+    val profilePicture: String = "",
+    val favoriteRecipes: List<Int> = emptyList()
 )
