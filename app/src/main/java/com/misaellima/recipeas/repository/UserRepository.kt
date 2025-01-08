@@ -12,11 +12,11 @@ class UserRepository (private val userDao: UserDao) {
         userDao.upsertUser(user)
     }
 
-    fun getUserById(id: Int): User {
+    suspend fun getUserById(id: Int): User {
        return userDao.getUserById(id)
     }
 
-    fun getUserByEmail(email: String): User {
+    suspend fun getUserByEmail(email: String): User {
         return userDao.getUserByEmail(email)
     }
 
@@ -28,11 +28,11 @@ class UserRepository (private val userDao: UserDao) {
         userDao.deleteUser(user)
     }
 
-    fun getAllUsers(): Flow<List<User>> {
+    suspend fun getAllUsers(): Flow<List<User>> {
         return userDao.getAllUsers()
     }
 
-    fun getFavoriteRecipes(id: Int): Flow<List<Int>> {
+    suspend fun getFavoriteRecipes(id: Int): Flow<List<Int>> {
         return userDao.getFavoriteRecipesRaw(id).map { rawString ->
             Converter().toIntList(rawString)
         }

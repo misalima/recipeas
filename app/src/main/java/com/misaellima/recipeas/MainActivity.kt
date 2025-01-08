@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-
 import androidx.compose.ui.Modifier
+import com.misaellima.recipeas.database.DatabaseProvider
 import com.misaellima.recipeas.ui.theme.RecipeasTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,6 +17,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val userDao = DatabaseProvider.getDatabase(this).userDao()
+        val recipeDao = DatabaseProvider.getDatabase(this).recipeDao()
 
         setContent {
             RecipeasTheme {
